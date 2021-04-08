@@ -1,6 +1,8 @@
 import numpy as np
 import heapq as hq
 
+import timeit
+
 class State:
 
     def __init__(self, mat : np.array):
@@ -45,6 +47,9 @@ class State:
     def __eq__(self, rhs):
         return np.array_equal(self.__state_mat, rhs.__state_mat)
 
+ 
+
+
 
 class PuzzleSolver:
     def __init__(self, start_state, goal_state):
@@ -61,11 +66,9 @@ class PuzzleSolver:
 
         while(self.open):
             self.current_state = hq.heappop(self.open)
-            hq.heappush(self.close, self.current_state)
+            hq.heappush(self.close, (self.current_state))
 
             if(self.current_state == self.goal_state):
-                print(moves)
-                print(self.current_state.get_cost())
                 return("Goal has been reached", self.current_state.get_state_mat())
 
             moves += 1
@@ -83,11 +86,9 @@ class PuzzleSolver:
     
     def duplicate_state(self, new_state):
 
-        duplicates = [state for state in self.close if state == new_state]
-
-        if(len(duplicates) != 0):
+        if new_state in self.close:
             return True
-        
+
         return False
         
     def find_possible_movements(self):
@@ -136,15 +137,19 @@ if __name__ == '__main__':
     #start_state = np.array([[4, 1, 3], [7, 2, 6], [0, 5, 8]])
 
     # MEDIUM
-    #start_state = np.array([[7, 2, 4], [5, 0, 6], [8, 3, 1]])
+    start_state = np.array([[7, 2, 4], [5, 0, 6], [8, 3, 1]])
 
     # DIFFICULT
-    start_state = np.array([[6, 4, 7], [8, 5, 0], [3, 2, 1]])
+    #start_state = np.array([[6, 4, 7], [8, 5, 0], [3, 2, 1]])
 
 
     goal_state = goal_state.reshape(3,3)
     init = State(start_state)
     goal = State(goal_state)
     solution = PuzzleSolver(init, goal)
+
+    start_time = timeit.default_timer()
     solution.heuristic_search()
+    elapsed_time = timeit.default_timer() - start_time
+    print("Time elapsed: ", elapsed_time)
 
