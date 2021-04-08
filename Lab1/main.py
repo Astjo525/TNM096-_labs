@@ -7,14 +7,28 @@ class State:
 
     def __init__(self, mat : np.array):
         self.state_mat = mat
-        self.string_mat = self.mat_to_string(self.state_mat)
-        self.h1 = self.calc_h1()
+        self.string_mat = ''
+        self.h1 = 0
         self.cost = 0 # Every movement gets cost function = 1? Increasing 1 for each movement. Can also save path.
-        self.evaluation = self.cost + self.h1
+        self.evaluation = 0
         
-    def calc_h1(self):
-        # TODO: where to place goal?
-        #posy, posx = np.where(self.current_state.state_mat == 0)
+    # def calc_h1(self):
+    #     # TODO: where to place goal?
+    #     #posy, posx = np.where(self.current_state.state_mat == 0)
+    #     goal = np.arange(1,10)
+    #     goal[8] = -1
+    #     goal = goal.reshape(3,3)
+
+    #     a = (self.state_mat == goal) * 1
+    #     a[2, 2] = 1
+
+    #     return (a == 0).sum()
+
+    # def update_cost_evaluation(self, val : int):
+    #     self.cost = val
+    #     self.evaluation = self.cost + self.h1
+
+    def update_heuristics(self, val: int):
         goal = np.arange(1,10)
         goal[8] = -1
         goal = goal.reshape(3,3)
@@ -22,17 +36,13 @@ class State:
         a = (self.state_mat == goal) * 1
         a[2, 2] = 1
 
-        return (a == 0).sum()
-
-    def update_cost_evaluation(self, val : int):
+        self.h1 = (a == 0).sum()
         self.cost = val
         self.evaluation = self.cost + self.h1
+
  
-    def mat_to_string(self, matrix):
-        # ÄNDRAT: Blev bättre
-        #matrix = matrix.reshape((1, 9))
-        #return "".join(map(str, matrix))
-        return np.array2string(matrix)
+    def mat_to_string(self):
+        self.string_mat = np.array2string(self.state_mat)
 
 
 class PuzzleSolver:
@@ -41,7 +51,6 @@ class PuzzleSolver:
         self.goal_state = goal_state
         self.counter = 0
         self.open = []
-        hq.heappush(self.open, (self.current_state.evaluation, self.counter, self.current_state)) # ÄNDRAD: blev lite bättre
         #self.open = [(self.current_state.evaluation, self.counter, self.current_state)]
         #hq.heapify(self.open)
         self.close = {}
@@ -50,6 +59,12 @@ class PuzzleSolver:
         # NOTE: Do we need to know what path we took? 
 
         moves = 0
+
+        self.current_state.update_heuristics(0) # ÄNDRAT: Blev bättre
+        self.current_state.mat_to_string()
+        hq.heappush(self.open, (self.current_state.evaluation, self.counter, self.current_state)) # ÄNDRAD: blev lite bättre
+
+        self.goal_state.mat_to_string()
 
         while(self.open):
             _, _ , self.current_state = hq.heappop(self.open)
@@ -65,30 +80,36 @@ class PuzzleSolver:
             moves += 1
             self.find_possible_movements()
 
-    def swap(self, curr_pos, adv_pos):
-        adv_state = self.current_state.state_mat.copy()
+    # def swap(self, curr_pos, adv_pos):
+    #     adv_state = self.current_state.state_mat.copy()
 
-        #adv_state[curr_pos[0], curr_pos[1]], adv_state[adv_pos[0], adv_pos[1]] = adv_state[adv_pos[0], adv_pos[1]], adv_state[curr_pos[0], curr_pos[1]]
+    #     #adv_state[curr_pos[0], curr_pos[1]], adv_state[adv_pos[0], adv_pos[1]] = adv_state[adv_pos[0], adv_pos[1]], adv_state[curr_pos[0], curr_pos[1]]
 
-        adv_state[curr_pos[0], curr_pos[1]] = adv_state[adv_pos[0], adv_pos[1]] # ÄNDRAT: blev typ lite snabbare
-        adv_state[adv_pos[0], adv_pos[1]] = 0 
+    #     adv_state[curr_pos[0], curr_pos[1]] = adv_state[adv_pos[0], adv_pos[1]] # ÄNDRAT: blev typ lite snabbare
+    #     adv_state[adv_pos[0], adv_pos[1]] = 0 
 
-        return adv_state
+    #     return adv_state
     
-    def duplicate_state(self, new_state):
+    # def duplicate_state(self, new_state):
 
-        if new_state in self.close:
-            return True
+    #     if new_state in self.close:
+    #         return True
 
-        return False
+    #     return False
 
     def handle_movement(self, old_pos, new_pos):
 
         self.counter += 1
-        swaped_mat = self.swap(old_pos, new_pos)
+
+        swaped_mat = self.current_state.state_mat.copy()
+        swaped_mat[old_pos[0], old_pos[1]] = swaped_mat[new_pos[0], new_pos[1]]
+        swaped_mat[new_pos[0], new_pos[1]] = 0 
+
+        #swaped_mat = self.swap(old_pos, new_pos)
         new_state = State(swaped_mat)
-        if(not self.duplicate_state(new_state.string_mat)):
-            new_state.update_cost_evaluation(self.current_state.cost + 1)
+        new_state.mat_to_string()
+        if(not new_state.string_mat in self.close):
+            new_state.update_heuristics(self.current_state.cost + 1)
             hq.heappush(self.open, (new_state.evaluation, self.counter, new_state))
         
         
@@ -108,7 +129,7 @@ class PuzzleSolver:
         if(posx + 1 <= 2):
             self.handle_movement([posy, posx], [posy, posx +1])
 
-            
+
 if __name__ == '__main__':
     # NOTE: put goal state (and start state) in separate class?
     goal_state = np.arange(1,10)
