@@ -40,7 +40,6 @@ class State:
         self.cost = val
         self.evaluation = self.cost + self.h1
 
- 
     def mat_to_string(self):
         self.string_mat = np.array2string(self.state_mat)
 
@@ -147,6 +146,9 @@ if __name__ == '__main__':
 
     # DIFFICULT
     start_state = np.array([[6, 4, 7], [8, 5, 0], [3, 2, 1]])
+
+    # VERY DIFFICULT
+    #start_state = np.array([[8, 6, 7], [2, 5, 4], [3, 0, 1]])
 
 
     goal_state = goal_state.reshape(3,3)
