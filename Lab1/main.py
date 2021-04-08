@@ -7,6 +7,7 @@ class State:
 
     def __init__(self, mat : np.array):
         self.__state_mat = mat
+        self.__string_mat = matrix_to_string(self.__state_mat)
         self.__h1 = self.calc_h1()
         self.__cost = 0 # Every movement gets cost function = 1? Increasing 1 for each movement. Can also save path.
         self.__evaluation = self.__cost + self.__h1
@@ -21,6 +22,9 @@ class State:
         a[2, 2] = 1
 
         return (a == 0).sum()
+
+    def get_string_mat(self):
+        return self.__string_mat
 
     def get_h1(self):
         return self.__h1
@@ -43,12 +47,9 @@ class State:
     def __lt__(self, rhs):
         return self.__evaluation < rhs.__evaluation
 
-    # Override == operator
-    def __eq__(self, rhs):
-        return np.array_equal(self.__state_mat, rhs.__state_mat)
-
  
-
+def matrix_to_string(matrix):
+    return np.array2string(matrix)
 
 
 class PuzzleSolver:
@@ -66,9 +67,12 @@ class PuzzleSolver:
 
         while(self.open):
             self.current_state = hq.heappop(self.open)
-            hq.heappush(self.close, (self.current_state))
+            #self.close.update({matrix_to_string(self.current_state.get_state_mat())})
+            hq.heappush(self.close, (self.current_state.get_string_mat()))
 
-            if(self.current_state == self.goal_state):
+            if(self.current_state.get_string_mat() == self.goal_state.get_string_mat()):
+                print(self.current_state.get_string_mat())
+                print(self.current_state.get_cost())
                 return("Goal has been reached", self.current_state.get_state_mat())
 
             moves += 1
@@ -98,28 +102,28 @@ class PuzzleSolver:
         if(posy - 1 >= 0):
             advanced = self.swap([posy, posx], [posy -1, posx])
             new_state = State(advanced)
-            if(not self.duplicate_state(new_state)):
+            if(not self.duplicate_state(new_state.get_string_mat())):
                 new_state.set_cost(self.current_state.get_cost() + 1)
                 hq.heappush(self.open, new_state)
         # Go down
         if(posy + 1 <= 2):
             advanced = self.swap([posy, posx], [posy +1, posx])
             new_state = State(advanced)
-            if(not self.duplicate_state(new_state)):
+            if(not self.duplicate_state(new_state.get_string_mat())):
                 new_state.set_cost(self.current_state.get_cost() + 1)
                 hq.heappush(self.open, new_state)
         # Go left
         if(posx - 1 >= 0):
             advanced = self.swap([posy, posx], [posy, posx -1])
             new_state = State(advanced)
-            if(not self.duplicate_state(new_state)):
+            if(not self.duplicate_state(new_state.get_string_mat())):
                 new_state.set_cost(self.current_state.get_cost() + 1)
                 hq.heappush(self.open, new_state)
         # Go right
         if(posx + 1 <= 2):
             advanced = self.swap([posy, posx], [posy, posx +1])
             new_state = State(advanced)
-            if(not self.duplicate_state(new_state)):
+            if(not self.duplicate_state(new_state.get_string_mat())):
                 new_state.set_cost(self.current_state.get_cost() + 1)
                 hq.heappush(self.open, new_state)
         
@@ -137,10 +141,10 @@ if __name__ == '__main__':
     #start_state = np.array([[4, 1, 3], [7, 2, 6], [0, 5, 8]])
 
     # MEDIUM
-    start_state = np.array([[7, 2, 4], [5, 0, 6], [8, 3, 1]])
+    #start_state = np.array([[7, 2, 4], [5, 0, 6], [8, 3, 1]])
 
     # DIFFICULT
-    #start_state = np.array([[6, 4, 7], [8, 5, 0], [3, 2, 1]])
+    start_state = np.array([[6, 4, 7], [8, 5, 0], [3, 2, 1]])
 
 
     goal_state = goal_state.reshape(3,3)
@@ -152,4 +156,5 @@ if __name__ == '__main__':
     solution.heuristic_search()
     elapsed_time = timeit.default_timer() - start_time
     print("Time elapsed: ", elapsed_time)
+
 
