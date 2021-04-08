@@ -82,7 +82,14 @@ class PuzzleSolver:
 
         return False
 
+    def handle_movement(self, old_pos, new_pos):
 
+        self.counter += 1
+        swaped_mat = self.swap(old_pos, new_pos)
+        new_state = State(swaped_mat)
+        if(not self.duplicate_state(new_state.string_mat)):
+            new_state.update_cost_evaluation(self.current_state.cost + 1)
+            hq.heappush(self.open, (new_state.evaluation, self.counter, new_state))
         
         
     def find_possible_movements(self):
@@ -90,37 +97,18 @@ class PuzzleSolver:
 
         # Go up
         if(posy - 1 >= 0):
-            self.counter += 1
-            advanced = self.swap([posy, posx], [posy -1, posx])
-            new_state = State(advanced)
-            if(not self.duplicate_state(new_state.string_mat)):
-                new_state.update_cost_evaluation(self.current_state.cost + 1)
-                hq.heappush(self.open, (new_state.evaluation, self.counter, new_state))
+            self.handle_movement([posy, posx], [posy -1, posx])
         # Go down
         if(posy + 1 <= 2):
-            self.counter += 1
-            advanced = self.swap([posy, posx], [posy +1, posx])
-            new_state = State(advanced)
-            if(not self.duplicate_state(new_state.string_mat)):
-                new_state.update_cost_evaluation(self.current_state.cost + 1)
-                hq.heappush(self.open, (new_state.evaluation, self.counter, new_state))
+            self.handle_movement([posy, posx], [posy +1, posx])
         # Go left
         if(posx - 1 >= 0):
-            self.counter += 1
-            advanced = self.swap([posy, posx], [posy, posx -1])
-            new_state = State(advanced)
-            if(not self.duplicate_state(new_state.string_mat)):
-                new_state.update_cost_evaluation(self.current_state.cost + 1)
-                hq.heappush(self.open, (new_state.evaluation, self.counter, new_state))
+            self.handle_movement([posy, posx], [posy, posx -1])
         # Go right
         if(posx + 1 <= 2):
-            self.counter += 1
-            advanced = self.swap([posy, posx], [posy, posx +1])
-            new_state = State(advanced)
-            if(not self.duplicate_state(new_state.string_mat)):
-                new_state.update_cost_evaluation(self.current_state.cost + 1)
-                hq.heappush(self.open, (new_state.evaluation, self.counter, new_state))
+            self.handle_movement([posy, posx], [posy, posx +1])
 
+            
 if __name__ == '__main__':
     # NOTE: put goal state (and start state) in separate class?
     goal_state = np.arange(1,10)
