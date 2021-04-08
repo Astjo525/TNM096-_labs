@@ -41,7 +41,7 @@ class State:
         self.evaluation = self.cost + self.h1
 
     def mat_to_string(self):
-        self.string_mat = np.array2string(self.state_mat)
+        self.string_mat = self.state_mat.tobytes()
 
 
 class PuzzleSolver:
@@ -72,22 +72,22 @@ class PuzzleSolver:
             self.close[self.current_state.string_mat] = 1
 
             if(self.current_state.string_mat == self.goal_state.string_mat):
-                print(self.current_state.string_mat)
+                print(self.current_state.state_mat)
                 print(self.current_state.cost)
                 return("Goal has been reached", self.current_state.state_mat)
 
             moves += 1
             self.find_possible_movements()
 
-    # def swap(self, curr_pos, adv_pos):
-    #     adv_state = self.current_state.state_mat.copy()
+    def swap(self, curr_pos, adv_pos):
+        adv_state = self.current_state.state_mat.copy()
 
-    #     #adv_state[curr_pos[0], curr_pos[1]], adv_state[adv_pos[0], adv_pos[1]] = adv_state[adv_pos[0], adv_pos[1]], adv_state[curr_pos[0], curr_pos[1]]
+        #adv_state[curr_pos[0], curr_pos[1]], adv_state[adv_pos[0], adv_pos[1]] = adv_state[adv_pos[0], adv_pos[1]], adv_state[curr_pos[0], curr_pos[1]]
 
-    #     adv_state[curr_pos[0], curr_pos[1]] = adv_state[adv_pos[0], adv_pos[1]] # ÄNDRAT: blev typ lite snabbare
-    #     adv_state[adv_pos[0], adv_pos[1]] = 0 
+        adv_state[curr_pos[0], curr_pos[1]] = adv_state[adv_pos[0], adv_pos[1]] # ÄNDRAT: blev typ lite snabbare
+        adv_state[adv_pos[0], adv_pos[1]] = 0 
 
-    #     return adv_state
+        return adv_state
     
     # def duplicate_state(self, new_state):
 
@@ -100,11 +100,12 @@ class PuzzleSolver:
 
         self.counter += 1
 
-        swaped_mat = self.current_state.state_mat.copy()
-        swaped_mat[old_pos[0], old_pos[1]] = swaped_mat[new_pos[0], new_pos[1]]
-        swaped_mat[new_pos[0], new_pos[1]] = 0 
+        # swaped_mat = self.current_state.state_mat.copy()
+        # swaped_mat[old_pos[0], old_pos[1]] = swaped_mat[new_pos[0], new_pos[1]]
+        # swaped_mat[new_pos[0], new_pos[1]] = 0 
 
-        #swaped_mat = self.swap(old_pos, new_pos)
+        swaped_mat = self.swap(old_pos, new_pos)
+
         new_state = State(swaped_mat)
         new_state.mat_to_string()
         if(not new_state.string_mat in self.close):
@@ -145,10 +146,10 @@ if __name__ == '__main__':
     #start_state = np.array([[7, 2, 4], [5, 0, 6], [8, 3, 1]])
 
     # DIFFICULT
-    start_state = np.array([[6, 4, 7], [8, 5, 0], [3, 2, 1]])
+    #start_state = np.array([[6, 4, 7], [8, 5, 0], [3, 2, 1]])
 
     # VERY DIFFICULT
-    #start_state = np.array([[8, 6, 7], [2, 5, 4], [3, 0, 1]])
+    start_state = np.array([[8, 6, 7], [2, 5, 4], [3, 0, 1]])
 
 
     goal_state = goal_state.reshape(3,3)
