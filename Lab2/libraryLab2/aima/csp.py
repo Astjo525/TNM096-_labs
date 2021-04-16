@@ -292,6 +292,8 @@ def min_conflicts(csp, max_steps=100000):
         var = random.choice(conflicted)
         val = min_conflicts_value(csp, var, current)
         csp.assign(var, val, current)
+        
+    
     return None
 
 
