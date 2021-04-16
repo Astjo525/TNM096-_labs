@@ -106,71 +106,45 @@ def min_conflicts(schedule, max_steps = 1000):
     current = schedule.variables
     np.random.shuffle(current)
 
+    
     #current = [202, 104, 103, 401, 301, 203, 402, 101, 0, 205, 303, 501, 106, 502, 201, 107, 204, 403, 105, 304, 206, 302, 0, 102]
 
-    for i in range(max_steps):
+    for _ in range(max_steps):
         current_conflicts = schedule.get_conflicts(current)
 
         if len(current_conflicts) == 0:
             return current
 
         var_ind = random.choice(current_conflicts)
-
-        min_conflict = np.inf
-
         random_val = current[var_ind]
         random_val_int = int(random_val/100)
 
-        temp_assignment = current.copy()
+        min_conflict = np.inf
+        initial_assignment = current.copy()
 
         for j in range(0, 24, 3):
-            row = temp_assignment[j:j+2]
+            row = initial_assignment[j:j+2]
             row_int = np.floor(np.array(row)/100).astype(int)
             if(len(row_int[row_int == random_val_int]) == 0):
-                for ind, var in enumerate(row):
-                    temp = temp_assignment.copy()
-                    #var = row[i]
+                for ind, _ in enumerate(row):
+                    swapped_assignment = initial_assignment.copy()
+                    swapped_assignment[j + ind], swapped_assignment[var_ind] = swapped_assignment[var_ind], swapped_assignment[j + ind]
 
-                    temp[j + ind], temp[var_ind] = temp[var_ind], temp[j + ind]
-                    conflicts = schedule.get_conflicts(temp)
-                    current_conflict = len(conflicts)
-                    if(current_conflict < min_conflict):
-                        min_conflict = current_conflict
-                        current = temp
+                    conflicts = schedule.get_conflicts(swapped_assignment)
+                    numb_conflicts = len(conflicts)
+                    
+                    if(numb_conflicts < min_conflict):
+                        min_conflict = numb_conflicts
+                        current = swapped_assignment
 
     return current
                         
-
-
-
-            
-
-
-
-
-    #     for i in range(len(zero_positions)):
-    #         temp_assignment = current.copy()
-    #         temp_assignment[zero_positions[i]] = temp_assignment[var_ind]
-    #         temp_assignment[var_ind] = 0
-
-    #         conflicts = schedule.get_conflicts(temp_assignment)
-    #         current_conflict = len(conflicts)
-
-    #         if(current_conflict < min_conflict):
-    #             min_conflict = current_conflict
-    #             val = zero_positions[i]
-
-    #     current[val] = current[var_ind]
-    #     current[var_ind] = 0
-
-    # return current
-
 def schedule_with_preference(schedule, max_iter = 300):
 
     max_preference = -1
     best_solution = []
 
-    for i in range(max_iter):
+    for _ in range(max_iter):
         solution = min_conflicts(schedule)
         preference_count = schedule.check_preferences(solution)
 
@@ -190,9 +164,6 @@ if __name__ == '__main__':
     #result = min_conflicts(schedule)
 
     result = schedule_with_preference(schedule)
-
-
-    #test = [202, 104, 103, 401, 301, 203, 402, 101, 0, 205, 303, 501, 106, 502, 201, 107, 204, 403, 105, 304, 206, 302, 0, 102]
 
 
 
