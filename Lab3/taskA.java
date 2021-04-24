@@ -1,6 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
-
 
 public class taskA {
 
@@ -9,7 +7,6 @@ public class taskA {
         ArrayList<String> arrayS = new ArrayList<String>(S);
         for(int i = 0; i < arrayS.size(); i++)
         {
-            //arrayS[i] = arrayS[i].replace("-", "");
             arrayS.set(i, arrayS.get(i).replace("-", ""));
         }
 
@@ -23,7 +20,6 @@ public class taskA {
         ArrayList<String> arrayS = new ArrayList<String>(S);
         for(int i = 0; i < arrayS.size(); i++)
         {
-            //arrayS[i] = arrayS[i].replace("-", "");
             arrayS.set(i, "-" + arrayS.get(i));
         }
 
@@ -32,25 +28,30 @@ public class taskA {
         return res;
     }
 
+    public static ArrayList<Set<String>> split_pos_neg(Set<String> S)
+    {
+        Set<String> Sp = new HashSet<>(S);
+        Sp.removeIf(x -> x.startsWith("-"));
+
+        Set<String> Sn = new HashSet<>(S);
+        Sn.removeAll(Sp);
+  
+        Sn = remove_minus(Sn);
+        
+        ArrayList<Set<String>> res = new ArrayList<Set<String>>(Arrays.asList(Sp,Sn));
+        return res;
+    }
     public static Set<String> Resolution(Set<String> A, Set<String> B)
     {
         
-        // Split the sets into positives and negatives
-        Set<String> Ap = new HashSet<>(A);
-        Ap.removeIf(x -> x.startsWith("-"));
-
-        Set<String> An = new HashSet<>(A);
-        An.removeAll(Ap);
-  
-        Set<String> Bp = new HashSet<>(B);
-        Bp.removeIf(x -> x.startsWith("-"));
-
-        Set<String> Bn = new HashSet<>(B);
-        Bn.removeAll(Bp);
-
-        An = remove_minus(An);
-        Bn = remove_minus(Bn);
-
+        ArrayList<Set<String>> new_A = split_pos_neg(A);
+        Set<String> Ap = new_A.get(0);
+        Set<String> An = new_A.get(1);
+        
+        ArrayList<Set<String>> new_B = split_pos_neg(B);
+        Set<String> Bp = new_B.get(0);
+        Set<String> Bn = new_B.get(1);
+        
         Set<String> intersection_An_Bp = new HashSet<>(An);
         intersection_An_Bp.retainAll(Bp);
 
@@ -61,8 +62,6 @@ public class taskA {
 
         if (intersection_An_Bp.size() == 0 && intersection_Ap_Bn.size() == 0)
         {
-            // return false?
-            System.out.println("hej");
             return C;
         }
 
@@ -92,8 +91,6 @@ public class taskA {
 
         if(intersection_Cp_Cn.size() != 0)
         {
-            //return false
-            System.out.println("Hej igen");
             return C;
         }
 
@@ -101,8 +98,6 @@ public class taskA {
 
         C = Cp;
         C.addAll(Cn);
-
-        //System.out.println(C);
 
         return C;
     }
@@ -116,7 +111,7 @@ public class taskA {
         while(!KB_prim.equals(KB))
         {
             S = new ArrayList<Set<String>>();
-            KB_prim = KB;
+            KB_prim = new ArrayList<Set<String>>(KB);
 
             for(int i = 0; i < KB.size(); i++)
             {
@@ -156,29 +151,38 @@ public class taskA {
 
     public static ArrayList<Set<String>> Incorporate_clause(Set<String>A, ArrayList<Set<String>> KB)
     {
+        ArrayList<Set<String>> new_A = split_pos_neg(A);
+        Set<String> Ap = new_A.get(0);
+        Set<String> An = new_A.get(1);
+        
         for(int i = 0; i < KB.size(); i++)
         {
             Set<String> B = KB.get(i);
-            if(A.containsAll(B))
-            {
-                return KB;
-            }
-        }
+            ArrayList<Set<String>> new_B = split_pos_neg(B);
+            Set<String> Bp = new_B.get(0);
+            Set<String> Bn = new_B.get(1);
 
-        for(int i = 0; i < KB.size(); i++)
-        {
-            Set<String> B = KB.get(i);
-            if(B.containsAll(A) && !B.equals(A))
+            if(Bp.containsAll(Ap) && Bn.containsAll(An) && !B.equals(A))
             {
                 KB.remove(i);
                 i--;
             }
         }
 
-        if(!KB.contains(A))
+        for(int i = 0; i < KB.size(); i++)
         {
-            KB.add(A);
-        }  
+            Set<String> B = KB.get(i);
+            ArrayList<Set<String>> new_B = split_pos_neg(B);
+            Set<String> Bp = new_B.get(0);
+            Set<String> Bn = new_B.get(1);
+
+            if(Ap.containsAll(Bp) && An.containsAll(Bn))
+            {
+                return KB;
+            }
+        }
+
+        KB.add(A);
 
         return KB;
     }
@@ -195,34 +199,34 @@ public class taskA {
         // Set<String> E = new HashSet<String>(Arrays.asList("-b", "e", "-f"));
 
         // BOB
-        Set<String> A = new HashSet<String>(Arrays.asList("-sun", "-money", "ice"));
-        Set<String> B = new HashSet<String>(Arrays.asList("-money", "ice", "movie"));
-        Set<String> C = new HashSet<String>(Arrays.asList("-movie", "money"));
-        Set<String> D = new HashSet<String>(Arrays.asList("-movie", "-ice"));
-        Set<String> E = new HashSet<String>(Arrays.asList("movie"));
-
-        // Set<String> A = new HashSet<String>(Arrays.asList("movie", "ice"));
-        // Set<String> B = new HashSet<String>(Arrays.asList("-movie"));
+        // Set<String> A = new HashSet<String>(Arrays.asList("-sun", "-money", "ice"));
+        // Set<String> B = new HashSet<String>(Arrays.asList("-money", "ice", "movie"));
+        // Set<String> C = new HashSet<String>(Arrays.asList("-movie", "money"));
+        // Set<String> D = new HashSet<String>(Arrays.asList("-movie", "-ice"));
+        // Set<String> E = new HashSet<String>(Arrays.asList("movie"));
         
-        //Set<String> E = new HashSet<String>(Arrays.asList("-b", "e", "-f"));
 
-        // String[] Ap = {"b"};
-        // String[] An = {"a", "c"};
-        // String[] Bp = {"b", "a"};
-        // String[] Bn = {"c", "f"};
-        //Set<String> B = new HashSet<String>(Arrays.asList("-a", "b", "f"));
+        // TASK 2 HATS
+        // (blue & red) <=> blue
+        Set<String> A = new HashSet<String>(Arrays.asList("-red", "-blue", "blue"));
+        Set<String> B = new HashSet<String>(Arrays.asList("-blue", "red"));
+        Set<String> C = new HashSet<String>(Arrays.asList("-blue", "blue"));
+        // We see a blue and red hat
+        Set<String> D = new HashSet<String>(Arrays.asList("blue"));
+        Set<String> E = new HashSet<String>(Arrays.asList("red"));
+        // (blue & blue) <=> red
+        Set<String> F = new HashSet<String>(Arrays.asList("-blue", "-blue", "red"));
+        Set<String> G = new HashSet<String>(Arrays.asList("-red", "blue"));
+        Set<String> H = new HashSet<String>(Arrays.asList("-red", "blue"));
 
-        //System.out.println(A);
-        //System.out.println(B);
-        Set<String> res = Resolution(A, B);
 
-        System.out.println(res);
+        //Set<String> res = Resolution(C, B);
 
-        ArrayList<Set<String>> KB = new ArrayList<Set<String>>(Arrays.asList(A, B, C, D, E));
+        //System.out.println(res);
+
+        ArrayList<Set<String>> KB = new ArrayList<Set<String>>(Arrays.asList(A, B, C, D, E, F, G, H));
         KB = Solver(KB);
 
         System.out.println(KB);
-        //Sn = set([s for s in S if s.startswith('-')])
-
     }
 }
