@@ -1,3 +1,4 @@
+//import java.utils.*;
 
 public class MyAgent implements Agent
 {
@@ -6,6 +7,20 @@ public class MyAgent implements Agent
     public MyAgent(World world)
     {
         w = world;
+
+        //ArrayList<Set<String>> KB = new ArrayList<Set<String>>(Arrays.asList());
+
+        System.out.println("Testar om denna körs en gång fråpn WW");
+        System.out.println(w.getPlayerX());
+        System.out.println(w.getPlayerY());
+        Boolean a = w.hasBreeze(w.getPlayerX(), w.getPlayerY());
+        System.out.println(a);
+        // while(w.hasGlitter() == false && w.hasWumpus() == false)
+        // {
+            
+        // }
+        //w.doAction(w.);
+        
     }
     
  
@@ -36,10 +51,12 @@ public class MyAgent implements Agent
         //Test the environment
         if (w.hasBreeze(cX, cY))
         {
+            //add breeze in KB for this location => there is a pit nearby
             System.out.println("I am in a Breeze");
         }
         if (w.hasStench(cX, cY))
         {
+            //add stench in KB for this location => Wumpus nearby
             System.out.println("I am in a Stench");
         }
         if (w.hasPit(cX, cY))
