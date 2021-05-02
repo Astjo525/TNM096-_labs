@@ -96,7 +96,7 @@ public class MyAgent implements Agent
                 KB.add(stench);
             }
         }
-        //KB.add(one_wumpus);
+        KB.add(one_wumpus);
         System.out.println("DONE");
     }
 

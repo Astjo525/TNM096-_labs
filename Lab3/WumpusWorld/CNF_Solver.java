@@ -106,24 +106,27 @@ public class CNF_Solver {
 
         ArrayList<Set<String>> S = new ArrayList<Set<String>>();
         ArrayList<Set<String>> KB_prim = new ArrayList<Set<String>>();
+        Set<String> C;
 
         while(!KB_prim.equals(KB))
         {
             S = new ArrayList<Set<String>>();
             KB_prim = new ArrayList<Set<String>>(KB);
 
-            for(int i = 0; i < KB.size(); i++)
+            for(Set<String> e1: KB)
             {
-                for(int j = i+1; j < KB.size(); j++)
+                for(Set<String> e2: KB)
                 {
-                    Set<String> C = Resolution(KB.get(i), KB.get(j));
+                    if(e1 != e2) {
+                        C = Resolution(e1, e2);
 
-                    if(!C.isEmpty())
-                    {
-                        if(!S.contains(C))
+                        if(!C.isEmpty())
                         {
-                            S.add(C);
-                        }        
+                            if(!S.contains(C))
+                            {
+                                S.add(C);
+                            }        
+                        }
                     }
                 }
             }
@@ -153,25 +156,30 @@ public class CNF_Solver {
         ArrayList<Set<String>> new_A = split_pos_neg(A);
         Set<String> Ap = new_A.get(0);
         Set<String> An = new_A.get(1);
+
+        ArrayList<Set<String>> remove = new ArrayList<Set<String>>();
         
-        for(int i = 0; i < KB.size(); i++)
+        for(Set<String> e1: KB)
         {
-            Set<String> B = KB.get(i);
+            Set<String> B = e1;
             ArrayList<Set<String>> new_B = split_pos_neg(B);
             Set<String> Bp = new_B.get(0);
             Set<String> Bn = new_B.get(1);
 
-            if(Bp.containsAll(Ap) && Bn.containsAll(An) && !B.equals(A))
+            if(Bp.containsAll(Ap) && Bn.containsAll(An) && !e1.equals(A))
             {
-                KB.remove(i);
-                i--;
+                //KB.remove(e1);
+                //i--;
+                remove.add(e1);
             }
         }
+        
+        remove.forEach(e -> KB.remove(e));
 
-        for(int i = 0; i < KB.size(); i++)
+        for(Set<String> e1: KB)
         {
-            Set<String> B = KB.get(i);
-            ArrayList<Set<String>> new_B = split_pos_neg(B);
+            //Set<String> B = KB.get(i);
+            ArrayList<Set<String>> new_B = split_pos_neg(e1);
             Set<String> Bp = new_B.get(0);
             Set<String> Bn = new_B.get(1);
 
