@@ -5,14 +5,14 @@ import java.util.*;
 public class MyAgent implements Agent
 {
     private World w;
-    private ArrayList<Set<String>> KB;
+    private Set<Set<String>> KB;
     private CNF_Solver solve;
     
     public MyAgent(World world)
     {
         w = world;
 
-        KB = new ArrayList<Set<String>>();
+        KB = new HashSet<Set<String>>();
         init_KB();
 
         //System.out.println(KB);

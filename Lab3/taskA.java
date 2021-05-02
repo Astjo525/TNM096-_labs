@@ -1,4 +1,3 @@
-
 import java.util.*;
 
 import CNF_Solver.CNF_Solver;
@@ -21,32 +20,31 @@ public class taskA {
         // Set<String> C = new HashSet<String>(Arrays.asList("-movie", "money"));
         // Set<String> D = new HashSet<String>(Arrays.asList("-movie", "-ice"));
         // Set<String> E = new HashSet<String>(Arrays.asList("movie"));
-        
+        // Set<String> F = new HashSet<String>(Arrays.asList("sun", "movie", "cry"));
 
         // TASK 2 HATS
 
         // Pos = blue
         // Neg = red
         // a = person 1, b = person 2, c = me
-        // red(a) & blue(b) => blue(c)
+        //red(a) & blue(b) => blue(c)
         Set<String> A = new HashSet<String>(Arrays.asList("a", "-b", "c"));
 
         // blue(a) & red(b) => blue(c)
         Set<String> B = new HashSet<String>(Arrays.asList("-a", "b", "c"));
 
         // blue(a) & blue(b) => red(c)
-        Set<String> C = new HashSet<String>(Arrays.asList("-a", "-b", "-c"));
+        Set<String> C = new HashSet<String>(Arrays.asList("a", "b", "-c"));
 
         // given a is red and b is blue
         Set<String> D = new HashSet<String>(Arrays.asList("a"));
         Set<String> E = new HashSet<String>(Arrays.asList("-b"));
 
-
-        //Set<String> res = Solver.Resolution(C, B);
+        //Set<String> res = CNF_Solver.Resolution(A, B);
 
         //System.out.println(res);
 
-        ArrayList<Set<String>> KB = new ArrayList<Set<String>>(Arrays.asList(A, B, C, D, E));
+        Set<Set<String>> KB = new HashSet<Set<String>>(Arrays.asList(A, B, C, D, E));
         //Solver solver = new Solver();
         KB = CNF_Solver.Solver(KB);
 
