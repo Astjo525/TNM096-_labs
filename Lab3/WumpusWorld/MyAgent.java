@@ -225,7 +225,6 @@ public class MyAgent implements Agent
             possible_stenches.add(one_stench);
         }
         else{
-            System.out.println("Not stench");
             add_observation_to_KB("-" + World.STENCH, cX, cY);
         }
 
@@ -263,22 +262,17 @@ public class MyAgent implements Agent
 
         KB = CNF_Solver.Solver(KB);
 
-        System.out.println(KB);
+        //System.out.println(KB);
 
         if(wumpus_killed == false)
         {
 
             Set<Set<String>> stench_found = new HashSet<Set<String>>(KB);
 
-            System.out.println(stench_found);
-
             stench_found.retainAll(possible_stenches);
-
-            System.out.println(stench_found);
 
             if(stench_found.size() == 2)
             {
-                System.out.println("hej");
                 int[] stench = new int[4];
                 //int[] stench2 = new int[2];
 
@@ -287,31 +281,20 @@ public class MyAgent implements Agent
                 for(Set<String> e: stench_found)
                 {
                     String e_str = e.iterator().next();
-                    System.out.println(e_str);
                     char[] stench_pos = e_str.toCharArray();
                     stench[count] = Character.getNumericValue(stench_pos[1]);
                     stench[count + 1] = Character.getNumericValue(stench_pos[2]);
                     count = 2;
                 }
 
-                System.out.println(stench[0]);
-                
-                System.out.println(stench[1]);
-                
-                System.out.println(stench[2]);
-                
-                System.out.println(stench[3]);
-
                 if(stench[0] + 1 == stench[2] && stench[1] == stench[3] + 1)
                 {
                     add_observation_to_KB(World.WUMPUS, stench[2], stench[1]);
-                    System.out.println("Wumpus in" + stench[2] + stench[1]);
                     KB = CNF_Solver.Solver(KB);
                 }
                 else if(stench[0] == stench[2] + 1 && stench[1] + 1 == stench[3])
                 {
                     add_observation_to_KB(World.WUMPUS, stench[0], stench[3]);
-                    System.out.println("Wumpus in" + stench[0] + stench[3]);
                     KB = CNF_Solver.Solver(KB);
                 }
             }
@@ -401,11 +384,11 @@ public class MyAgent implements Agent
         
         int move_index = new Random().nextInt(options.size());
         
-        System.out.println("Move options");
-        System.out.println(options);
+        //System.out.println("Move options");
+        //System.out.println(options);
 
-        System.out.println("Random move index");
-        System.out.println(move_index);
+        //System.out.println("Random move index");
+        //System.out.println(move_index);
 
         if(options.size() != 0)
         {
